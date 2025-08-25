@@ -5,12 +5,18 @@ const PORT = process.env.PORT || 3001;
 
 async function startServer() {
     try {
-        // Verificar conexión a la base de datos
+        // Intentar conexión a la base de datos (opcional)
         console.log('🔌 Verificando conexión a SQL Server...');
-        await getPool();
+        try {
+            await getPool();
+            console.log('✅ Conexión a SQL Server exitosa');
+        } catch (dbError) {
+            console.warn('⚠️ No se pudo conectar a SQL Server, continuando sin BD:', dbError.message);
+            console.warn('💡 El API funcionará en modo limitado sin persistencia');
+        }
 
         // Iniciar servidor
-        const server = app.listen(PORT, () => {
+        const server = app.listen(PORT, '0.0.0.0', () => {
             console.log('🚀 Servidor iniciado exitosamente');
             console.log(`📍 Puerto: ${PORT}`);
             console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
@@ -38,11 +44,6 @@ async function startServer() {
 
     } catch (error) {
         console.error('❌ Error al iniciar el servidor:', error);
-
-        if (error.code === 'ECONNREFUSED' || error.originalError?.code === 'ECONNREFUSED') {
-            console.error('💡 Verifique que SQL Server esté ejecutándose y las credenciales en .env sean correctas');
-        }
-
         process.exit(1);
     }
 }
