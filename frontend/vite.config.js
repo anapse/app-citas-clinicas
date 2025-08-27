@@ -4,10 +4,11 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
     plugins: [react()],
-    base: './',
+    base: '/app-citas-clinicas/',
     build: {
         outDir: 'dist',
-        sourcemap: false
+        sourcemap: false,
+        assetsDir: 'assets'
     },
     server: {
         port: 5174,
