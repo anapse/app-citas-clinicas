@@ -1,0 +1,507 @@
+/* Navbar Component */
+.navbar {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-light) 100%);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(20px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 3.5rem;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.navbar-brand {
+  font-size: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.02);
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Login Modal */
+.modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999 !important;
+  
+  padding: 0;
+  backdrop-filter: blur(10px);
+  animation: backdropEnter 0.3s ease-out;
+  overflow-y: auto;
+
+
+}
+
+@keyframes backdropEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: linear-gradient(145deg, var(--surface) 0%, var(--surface-light) 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  position: relative;
+  animation: modalEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  margin: 0;
+  overflow: visible;
+  z-index: 1000000 !important;
+}
+
+/* Modal específico para appointment */
+.modal.appointment-modal {
+  width: 50vw;
+  max-width: 50vw;
+  max-height: 90vh;
+  min-height: 70vh;
+  overflow: hidden;
+  height: auto;
+  margin: 0;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.appointment-modal .modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem 1.5rem 1rem;
+  max-height: calc(90vh - 80px);
+  min-height: calc(70vh - 80px);
+}
+
+/* Layout horizontal para formularios en appointment modal */
+.appointment-modal .form-group {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+.appointment-modal .form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  padding-top: 0.75rem;
+  text-align: left;
+}
+
+.appointment-modal .input {
+  width: 100%;
+  margin: 0;
+}
+
+.appointment-modal .error-message {
+  grid-column: 2;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--error);
+}
+
+.appointment-modal .form-actions {
+  grid-column: 1 / -1;
+  margin-top: 1.5rem;
+}
+
+.appointment-modal .modal-header {
+  flex-shrink: 0;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.appointment-modal .form-actions {
+  flex-shrink: 0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-close {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius);
+  transition: all 0.3s ease;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  background: var(--error);
+  color: white;
+  transform: scale(1.1);
+}
+
+.modal-body {
+  padding: 0.75rem 1rem;
+}
+
+.form-group {
+  margin-bottom: 0.625rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--border);
+}
+
+.form-actions .btn {
+  flex: 1;
+  padding: 0.5rem 0.875rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.error-message {
+  color: var(--error);
+  font-size: 0.8125rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.error-message::before {
+  content: '⚠️';
+  font-size: 0.75rem;
+}
+
+/* Calendar Component */
+.calendar {
+  width: 60%;
+  margin: 0 auto;
+  overflow-x: hidden;
+  background: linear-gradient(145deg, var(--surface) 0%, var(--surface-light) 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+}
+
+.calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, var(--surface-elevated) 0%, var(--surface-light) 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar__month {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.calendar__navbtn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #3a3f4d;
+  background: var(--surface-elevated);
+  cursor: pointer;
+  color: var(--text-primary);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.calendar__navbtn:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.calendar__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface-elevated);
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar__weekday {
+  text-align: center;
+  text-transform: lowercase;
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.9;
+  padding: 4px 0;
+}
+
+.calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px 16px 16px;
+  background: var(--surface);
+}
+
+.calendar__cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1/1;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-light);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 0.875rem;
+  position: relative;
+}
+
+.calendar__cell:hover {
+  background: var(--surface-elevated);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.calendar__cell--outside {
+  opacity: 0.45;
+  color: var(--text-tertiary);
+  cursor: default;
+}
+
+.calendar__cell--outside:hover {
+  transform: none;
+  border-color: var(--border);
+  background: var(--surface-light);
+}
+
+.calendar__cell--today {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  font-weight: 700;
+  background: linear-gradient(145deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: white;
+}
+
+.calendar__cell--selected {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.calendar__cell--past {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.calendar__cell--past:hover {
+  transform: none;
+  border-color: var(--border);
+  background: var(--surface-light);
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 0;
+  }
+  
+  .modal {
+    max-width: 95%;
+  }
+  
+  .modal.appointment-modal {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  
+  .modal-header {
+    padding: 0.625rem 0.75rem;
+  }
+  
+  .modal-body {
+    padding: 0.625rem 0.75rem;
+  }
+  
+  .calendar {
+    width: 95%;
+  }
+  
+  .calendar__grid,
+  .calendar__weekdays {
+    gap: 6px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  
+  .calendar__header {
+    padding: 8px 12px;
+  }
+  
+  .calendar__month {
+    font-size: 1rem;
+  }
+  
+  .calendar__navbtn {
+    padding: 4px 8px;
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  /* Responsividad para AppointmentModal */
+  .modal.appointment-modal {
+    width: 90vw;
+    max-width: 90vw;
+    max-height: 85vh;
+    min-height: 60vh;
+    border-radius: 15px;
+  }
+  
+  .appointment-modal .modal-body {
+    max-height: calc(85vh - 80px);
+    min-height: calc(60vh - 80px);
+    padding: 0.75rem;
+  }
+  
+  .appointment-modal .form-group {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .appointment-modal .form-label {
+    padding-top: 0;
+    margin-bottom: 0.25rem;
+  }
+  
+  .appointment-modal .error-message {
+    grid-column: 1;
+  }
+}
+
+/* Responsividad para móviles pequeños - AppointmentModal */
+@media (max-width: 480px) {
+  .modal.appointment-modal {
+    width: 98vw;
+    max-width: 98vw;
+    max-height: 90vh;
+    min-height: 70vh;
+    border-radius: 10px;
+  }
+  
+  .appointment-modal .modal-body {
+    max-height: calc(90vh - 60px);
+    min-height: calc(70vh - 60px);
+    padding: 0.5rem;
+  }
+  
+  .appointment-modal .form-group {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  
+  .appointment-modal .form-label {
+    font-size: 0.8rem;
+  }
+}
