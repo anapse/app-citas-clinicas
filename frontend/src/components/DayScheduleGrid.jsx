@@ -1,9 +1,9 @@
 // src/components/DayScheduleGrid.jsx
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import "../styles/DayScheduleGrid.css"; // Usar su propia hoja de estilos
 import "../styles/components.css"; // Para estilos de modal base
 import { DOCTORES } from "../data/doctores";
-import { HORAS_DIA } from "../data/horarios"; // o inline
+import { horariosService } from "../services/horariosService";
 
 /**
  * Componente modal para mostrar disponibilidad de horarios.
@@ -26,8 +26,118 @@ export default function DayScheduleGrid({
   horasOverride,
   doctoresOverride
 }) {
-  const hours = horasOverride ?? HORAS_DIA;
+  const [horasDisponibles, setHorasDisponibles] = useState([]);
+  const [loadingHorarios, setLoadingHorarios] = useState(false);
+  const [errorHorarios, setErrorHorarios] = useState(null);
+  const [usingDatabase, setUsingDatabase] = useState(true);
+
+  const hours = horasOverride ?? horasDisponibles;
   const doctors = doctoresOverride ?? DOCTORES;
+
+  // Cargar horarios disponibles de la base de datos
+  useEffect(() => {
+    if (!selectedDate || !isOpen) return;
+
+    const cargarHorarios = async () => {
+      setLoadingHorarios(true);
+      setErrorHorarios(null);
+      
+      // Horarios por defecto como respaldo
+      const horasDefault = [
+        "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
+        "13:00", "14:00", "15:00", "16:00", "17:00", "18:00",
+        "19:00", "20:00", "21:00"
+      ];
+
+      try {
+        // Verificar conectividad del backend
+        const backendDisponible = await horariosService.checkBackendConnection();
+        
+        if (!backendDisponible) {
+          console.log('Backend no disponible, usando horarios por defecto');
+          setHorasDisponibles(horasDefault);
+          setUsingDatabase(false);
+          setLoadingHorarios(false);
+          return;
+        }
+
+        const diaSemana = selectedDate.getDay();
+        const fechaISO = selectedDate.toISOString().split('T')[0];
+
+        // Estrategia 1: Obtener horas disponibles para la fecha específica
+        try {
+          const horasDisponibles = await horariosService.getHorasDisponibles(fechaISO);
+          if (horasDisponibles && horasDisponibles.length > 0) {
+            setHorasDisponibles(horasDisponibles);
+            setUsingDatabase(true);
+            return;
+          }
+        } catch (error) {
+          console.log('No hay horarios específicos para la fecha:', error.message);
+        }
+
+        // Estrategia 2: Obtener horarios por día de semana
+        try {
+          const horariosPorDia = await horariosService.getHorariosPorDia(diaSemana);
+          if (horariosPorDia && horariosPorDia.length > 0) {
+            const horasUnicas = [...new Set(horariosPorDia.map(h => h.hora))].sort();
+            setHorasDisponibles(horasUnicas);
+            setUsingDatabase(true);
+            return;
+          }
+        } catch (error) {
+          console.log('No hay horarios para el día de semana:', error.message);
+        }
+
+        // Estrategia 3: Obtener horarios de doctores individuales
+        const doctoresDelDia = doctors.filter(d => d.dias.includes(diaSemana));
+        
+        if (doctoresDelDia.length === 0) {
+          setHorasDisponibles(horasDefault);
+          setUsingDatabase(false);
+          return;
+        }
+
+        const horariosPromises = doctoresDelDia.map(doctor => 
+          horariosService.getDoctorHorarios(doctor.id).catch(() => null)
+        );
+        
+        const resultados = await Promise.all(horariosPromises);
+        
+        const todasLasHoras = new Set();
+        resultados.forEach(horarios => {
+          if (horarios && Array.isArray(horarios)) {
+            horarios.forEach(horario => {
+              if (horario.hora) {
+                todasLasHoras.add(horario.hora);
+              }
+            });
+          }
+        });
+
+        // Si se obtuvieron horarios de la BD, usarlos; sino, usar por defecto
+        if (todasLasHoras.size > 0) {
+          const horasOrdenadas = Array.from(todasLasHoras).sort();
+          setHorasDisponibles(horasOrdenadas);
+          setUsingDatabase(true);
+        } else {
+          setHorasDisponibles(horasDefault);
+          setUsingDatabase(false);
+        }
+
+      } catch (error) {
+        console.error('Error al cargar horarios:', error);
+        setErrorHorarios('Error de conexión con el servidor');
+        // Usar horarios por defecto en caso de error
+        setHorasDisponibles(horasDefault);
+        setUsingDatabase(false);
+      } finally {
+        setLoadingHorarios(false);
+      }
+    };
+
+    cargarHorarios();
+  }, [selectedDate, isOpen, doctors]);
 
   const dow = useMemo(() => selectedDate ? selectedDate.getDay() : null, [selectedDate]);
 
@@ -87,14 +197,61 @@ export default function DayScheduleGrid({
     day: 'numeric'
   });
 
+  // Mostrar estado de carga
+  if (loadingHorarios) {
+    return (
+      <div className="modal-backdrop">
+        <div className="modal schedule-modal">
+          <div className="schedule-header">
+            <h3 className="schedule-date">📅 {fechaLegible}</h3>
+          </div>
+          <button
+            className="modal-close"
+            onClick={onClose}
+            aria-label="Cerrar"
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: 'none',
+              color: 'white',
+              fontSize: '1.5rem',
+              width: '2rem',
+              height: '2rem',
+              borderRadius: '50%',
+              cursor: 'pointer',
+              zIndex: 10
+            }}
+          >
+            ×
+          </button>
+          <div className="modal-body">
+            <div className="loading-state">
+              <div className="loading-spinner">⏳</div>
+              <p>Cargando horarios disponibles...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="modal-backdrop">
       <div className="modal schedule-modal">
         {/* Header del modal con fecha y leyenda en la misma línea */}
         <div className="schedule-header">
-          <h3 className="schedule-date">
-            📅 {fechaLegible}
-          </h3>
+          <div className="schedule-title-section">
+            <h3 className="schedule-date">
+              📅 {fechaLegible}
+            </h3>
+            {!usingDatabase && (
+              <div className="schedule-offline-indicator" title="Mostrando horarios por defecto - Sin conexión a base de datos">
+                🔄 Modo sin conexión
+              </div>
+            )}
+          </div>
           <div className="schedule-legend">
             <div className="legend-item">
               <div className="legend-color legend-available"></div>

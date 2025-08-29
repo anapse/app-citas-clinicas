@@ -1,25 +1,43 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 import LoginModal from './LoginModal';
-import '../styles/components.css'; // Asegúrate de crear este archivo para los estilos
+import '../styles/components.css';
 
-const Navbar = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+const Navbar = ({ user, onLogin, showLoginInNavbar = false }) => {
+  const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLoginClick = () => {
-    setShowLoginModal(true);
+    if (showLoginInNavbar) {
+      setShowLoginModal(true);
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleCloseModal = () => {
     setShowLoginModal(false);
   };
 
+  const handleLoginSuccess = (userData) => {
+    setShowLoginModal(false);
+    if (onLogin) {
+      onLogin(userData);
+    }
+    // Redirigir al dashboard
+    navigate('/dashboard');
+  };
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await logout();
+      authService.logout();
+      if (onLogin) {
+        onLogin(null);
+      }
+      navigate('/');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     } finally {
@@ -27,23 +45,46 @@ const Navbar = () => {
     }
   };
 
+  const handleDashboardClick = () => {
+    navigate('/dashboard');
+  };
+
+  const handleHomeClick = () => {
+    navigate('/');
+  };
+
   return (
     <>
       <nav className="navbar">
         <div className="navbar-container">
-          {/* Brand / Logo */}
-          <a href="/" className="navbar-brand">
-            🏥 Citas Clínicas
-          </a>
+          {/* Brand / Logo con título completo */}
+          <button 
+            onClick={handleHomeClick}
+            className="navbar-brand"
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            🏥 Sistema de Citas Médicas
+          </button>
 
           {/* Navigation Actions */}
           <div className="navbar-actions">
-            {isAuthenticated ? (
+            {user ? (
               <>
-                {/* Administrador logueado */}
+                {/* Usuario logueado - mostrar rol y opciones */}
                 <span className="text-sm text-secondary">
-                  Admin: {user?.name || user?.username}
+                  {user.rol_nombre}: {user.nombre} {user.apellido}
                 </span>
+                
+                {/* Botón para ir al dashboard */}
+                <button
+                  onClick={handleDashboardClick}
+                  className="btn btn-primary btn-sm"
+                  aria-label="Ir al Dashboard"
+                >
+                  Dashboard
+                </button>
+
+                {/* Botón de logout */}
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
@@ -55,16 +96,16 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                {/* Botón de acceso administrativo */}
+                {/* Sistema público - botón de acceso administrativo */}
                 <span className="text-sm text-tertiary">
-                  ¿Eres administrador?
+                  ¿Eres staff médico?
                 </span>
                 <button
                   onClick={handleLoginClick}
                   className="btn btn-primary btn-sm"
-                  aria-label="Acceso administrativo"
+                  aria-label="Acceso staff médico"
                 >
-                  Admin
+                  Acceso Staff
                 </button>
               </>
             )}
@@ -72,11 +113,12 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Modal de Login */}
+      {/* Modal de Login para navbar */}
       {showLoginModal && (
         <LoginModal
           isOpen={showLoginModal}
           onClose={handleCloseModal}
+          onLogin={handleLoginSuccess}
         />
       )}
     </>

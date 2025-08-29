@@ -10,7 +10,16 @@
   },
   "dependencies": {
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.22.3",
+    "axios": "^1.6.8",
+    "react-query": "^3.39.3",
+    "react-hook-form": "^7.51.0",
+    "react-hot-toast": "^2.4.1",
+    "lucide-react": "^0.365.0",
+    "date-fns": "^3.6.0",
+    "chart.js": "^4.4.2",
+    "react-chartjs-2": "^5.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
