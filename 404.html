@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      // Redirige rutas profundas a index usando hash
+      var path = window.location.pathname.replace(/^\/app-citas-clinicas/, '');
+      window.location.replace('/app-citas-clinicas/' + (path ? '#' + path : ''));
+    </script>
+  </head>
+  <body></body>
+</html>
